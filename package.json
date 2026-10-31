@@ -1,0 +1,15 @@
+{
+  "name": "sonekk-sweep",
+  "version": "0.1.0",
+  "description": "Offline map checker for Unity VR levels. Finds holes, missing colliders, fall-through floors and open edges by raycasting a grid over the scene.",
+  "type": "module",
+  "license": "SEE LICENSE IN LICENSE",
+  "bin": { "sonekk-sweep": "src/cli.js" },
+  "files": ["src", "unity", "README.md", "LICENSE", "NOTICE"],
+  "scripts": {
+    "test": "node --test test/sweep.test.js",
+    "check": "node src/cli.js"
+  },
+  "engines": { "node": ">=18" },
+  "keywords": ["unity", "vr", "level-design", "qa", "collision", "raycast", "map-checker"]
+}
