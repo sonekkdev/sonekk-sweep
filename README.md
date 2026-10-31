@@ -86,6 +86,18 @@ Example CI gate:
 }
 ```
 
+## Ignore regions
+
+Intentional holes, windows and decoration will be reported. Mark them so the report keeps its signal:
+
+```js
+sweep(scene, { ignore: [
+  { type: 'pass_through', min: [12, 0, 0], max: [12, 3, 4], reason: 'glass window' }
+]})
+```
+
+`type` is optional, coordinates are world space, anything inside the box is dropped before clustering.
+
 ## Limits, honestly
 
 - Floors are found by casting up from below, so only the **lowest floor per column** is tested. Multi storey maps need one export per floor or a smaller sampling area.

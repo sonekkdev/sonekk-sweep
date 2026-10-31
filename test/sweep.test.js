@@ -108,6 +108,27 @@ test('primitives convert to triangles', () => {
   assert.ok(colliderTriangles({ type: 'capsule', a: [0, 0, 0], b: [0, 2, 0], radius: 0.4 }).length > 16)
 })
 
+test('ignore regions hide intentional holes', () => {
+  const scene = loadScene(room(null, 'east'))
+  const before = sweep(scene, { grid: 1 })
+  assert.ok(before.summary.passThrough > 0)
+
+  const after = sweep(scene, {
+    grid: 1,
+    ignore: [{ type: 'pass_through', min: [0, 0, 0], max: [10, 3, 10], reason: 'test window' }]
+  })
+  assert.equal(after.summary.passThrough, 0)
+})
+
+test('ignore regions do not hide other finding types', () => {
+  const scene = loadScene(room(null, 'east'))
+  const report = sweep(scene, {
+    grid: 1,
+    ignore: [{ type: 'fall_through', min: [0, 0, 0], max: [10, 3, 10], reason: 'wrong type' }]
+  })
+  assert.ok(report.summary.passThrough > 0)
+})
+
 test('invalid scenes fail with a clear error', () => {
   assert.throws(() => loadScene({}), /at least one mesh/)
   assert.throws(() => loadScene({ meshes: [{ positions: [] }] }), /no triangles/)

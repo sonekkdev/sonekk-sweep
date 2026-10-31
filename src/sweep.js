@@ -9,7 +9,23 @@ export const DEFAULTS = {
   maxDistance: 20,
   tolerance: 0.15,
   maxFindings: 200,
-  voidDistance: 25
+  voidDistance: 25,
+  ignore: []
+}
+
+/**
+ * Ignore regions let a level mark intentional holes, windows and decoration so the
+ * report stays signal. Each entry: { type?, min: [x,y,z], max: [x,y,z], reason }.
+ */
+function isIgnored (finding, ignore) {
+  if (!Array.isArray(ignore) || ignore.length === 0) return false
+  const [x, y, z] = finding.at
+  return ignore.some((region) => {
+    if (region.type && region.type !== finding.type) return false
+    const min = region.min ?? [-Infinity, -Infinity, -Infinity]
+    const max = region.max ?? [Infinity, Infinity, Infinity]
+    return x >= min[0] && x <= max[0] && y >= min[1] && y <= max[1] && z >= min[2] && z <= max[2]
+  })
 }
 
 /**
@@ -175,7 +191,7 @@ export function sweep (scene, options = {}) {
     }
   }
 
-  const clustered = clusterFindings(findings, config.grid * 1.5)
+  const clustered = clusterFindings(findings.filter((finding) => !isIgnored(finding, config.ignore)), config.grid * 1.5)
   const trimmed = clustered.slice(0, config.maxFindings)
   const count = (type) => trimmed.filter((finding) => finding.type === type).length
 
